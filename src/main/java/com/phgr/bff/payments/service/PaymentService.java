@@ -1,34 +1,9 @@
 package com.phgr.bff.payments.service;
 
-import com.phgr.bff.payments.domain.PaymentEvent;
-import com.phgr.bff.payments.domain.enums.PaymentStatusEnum;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Service;
+public interface PaymentService {
 
-@Service
-@RequiredArgsConstructor
-public class PaymentService {
+    String processPayment (final Long orderId);
 
-    @Value("${topics.payment}")
-    private String paymentTopic;
+    String cancelPayment (final Long orderId);
 
-    private final KafkaTemplate<String, PaymentEvent> kafkaTemplatePayment;
-
-    public void processPayment(Long orderId) {
-        PaymentEvent event = PaymentEvent.builder()
-                .status(PaymentStatusEnum.PAID)
-                .orderId(orderId)
-                .build();
-        kafkaTemplatePayment.send(paymentTopic, event);
-    }
-
-    public void cancelPayment(Long orderId) {
-        PaymentEvent event = PaymentEvent.builder()
-                .status(PaymentStatusEnum.CANCELLED)
-                .orderId(orderId)
-                .build();
-        kafkaTemplatePayment.send(paymentTopic, event);
-    }
 }
